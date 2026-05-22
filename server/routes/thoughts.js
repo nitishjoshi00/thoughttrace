@@ -39,4 +39,21 @@ router.get('/:id/thoughts', async (req, res) => {
   }
 });
 
+router.delete('/:id/thoughts/:thoughtId', async (req, res) => {
+  const { thoughtId } = req.params;
+  try {
+    const { rowCount } = await pool.query(
+      'DELETE FROM thoughts WHERE id = $1',
+      [thoughtId]
+    );
+    if (rowCount === 0) {
+      return res.status(404).json({ error: 'Thought not found' });
+    }
+    res.status(200).json({ deleted: true });
+  } catch (error) {
+    console.error('Error deleting thought:', error);
+    res.status(500).json({ error: 'Failed to delete thought' });
+  }
+});
+
 module.exports = router;
